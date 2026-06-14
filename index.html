@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGE VIP PREMIUM PANEL - NEW</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        /* Luxury Midnight Emerald & Rose Gold Theme */
+        :root {
+            --bg-body: #f4f6f9;
+            --bg-card: #ffffff;
+            --bg-header: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --accent: #34d399;
+            --gold: #fbbf24;
+            --card-border: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --bg-body: #060a12; 
+            --bg-card: #0f192a; 
+            --bg-header: linear-gradient(135deg, #022c22 0%, #011510 100%); 
+            --text-main: #f1f5f9;
+            --text-dim: #64748b;
+            --accent: #34d399; 
+            --gold: #f59e0b;   
+            --card-border: #1e293b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: 0.2s; }
+        body { background: var(--bg-body); color: var(--text-main); }
+
+        #loginSection { 
+            position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; 
+            background: var(--bg-body); z-index: 9999; padding: 20px;
+        }
+
+        .header { background: var(--bg-header); padding: 40px 20px; text-align: center; color: white; border-bottom: 4px solid var(--gold); position: relative; }
+        .nav-icons { position: absolute; top: 15px; right: 20px; display: flex; gap: 10px; }
+        .icon-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; margin: 20px auto 0; }
+        .stat-card { background: rgba(255,255,255,0.06); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+        .stat-card h2 { font-size: 28px; color: var(--gold); }
+
+        .search-container { max-width: 500px; margin: -25px auto 0; padding: 0 15px; position: relative; z-index: 10; }
+        .search-input { width: 100%; padding: 15px 15px 15px 45px; border-radius: 14px; border: 2px solid var(--accent); box-shadow: 0 10px 25px rgba(0,0,0,0.15); outline: none; background: var(--bg-card); color: var(--text-main); font-weight: bold; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; padding-bottom: 100px; }
+        
+        .user-card { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 22px; padding: 18px; display: grid; grid-template-rows: auto auto auto; gap: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); position: relative; overflow: hidden; }
+        
+        .status-badge { position: absolute; top: 15px; right: 15px; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; z-index: 10; }
+
+        .card-top { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 15px; }
+        
+        .progress-circle { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+        .progress-circle svg { transform: rotate(-90deg); width: 64px; height: 64px; display: block; }
+        .progress-circle circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+        .progress-circle .bg { stroke: rgba(128,128,128,0.15); }
+        .progress-circle .percentage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; }
+
+        .user-info { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+        
+        .user-name-title { font-weight: 900; font-size: 18px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+        .user-name-title i { color: var(--gold); font-size: 14px; } 
+        .user-sub-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+        .user-data-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); padding: 12px 0; }
+        .data-item { display: flex; flex-direction: column; gap: 3px; }
+        .data-item.right-align { text-align: right; align-items: flex-end; } 
+        
+        .data-label { font-size: 10px; color: var(--text-dim); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-value { font-size: 13px; color: var(--text-main); font-weight: 900; }
+        .data-value.id { font-family: monospace; font-size: 13px; color: var(--accent); }
+
+        .action-group { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-top: 4px; }
+        .act-btn { padding: 9px 4px; border-radius: 10px; border: none; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s; }
+        .act-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+        
+        .btn-edit { background: #2563eb; color: #ffffff; }
+        .btn-block { background: #dc2626; color: #ffffff; }
+        .btn-unblock { background: #059669; color: #ffffff; }
+        .btn-card { background: #d97706; color: #ffffff; }
+        .btn-delete { background: #4b5563; color: #ffffff; }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; z-index: 2100; backdrop-filter: blur(8px); }
+        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 24px; width: 90%; max-width: 400px; border: 2px solid var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        
+        .quick-date-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .q-date-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--bg-body); color: var(--text-main); font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .q-date-btn:hover { background: var(--accent); color: #000000; border-color: var(--accent); }
+
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid var(--card-border); background: var(--bg-body); color: var(--text-main); font-weight: bold; }
+        input:focus { border-color: var(--accent); outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: var(--accent); color: #000000; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 10px; letter-spacing: 0.5px; }
+        
+        .fab { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            width: 65px; 
+            height: 65px; 
+            background: var(--accent); 
+            color: #000000 !important; 
+            border-radius: 22px; 
+            border: none; 
+            font-size: 26px; 
+            cursor: pointer; 
+            box-shadow: 0 10px 25px rgba(52, 211, 153, 0.4); 
+            z-index: 9999; 
+            transition: transform 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .fab:hover { transform: scale(1.08); }
+        .fab i { color: #000000 !important; }
+
+        .vip-membership-card { 
+            width: 340px; 
+            height: 200px; 
+            background: linear-gradient(135deg, #021a14 0%, #010a08 100%); 
+            border-radius: 24px; 
+            padding: 24px; 
+            border: 1.5px solid rgba(52, 211, 153, 0.25); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6); 
+        }
+        
+        .vip-membership-card::before {
+            content: ''; position: absolute; top: -50px; right: -50px; 
+            width: 150px; height: 150px; 
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .card-inner { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .delete-btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-confirm-del { padding: 12px; background: #dc2626; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-cancel-del { padding: 12px; background: #4b5563; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+        .password-wrapper { position: relative; }
+        .password-wrapper i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-dim); }
+        .password-wrapper i:hover { color: var(--accent); }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div id="loginSection">
+        <div class="login-card" style="background: var(--bg-card); padding: 40px; border-radius: 24px; border: 2px solid var(--accent); text-align: center; width: 100%; max-width: 380px;">
+            <h2 style="color:var(--accent); margin-bottom: 20px; font-weight: 900; letter-spacing: 1px;">AGE ADMIN</h2>
+            <input type="text" id="adminUser" placeholder="Username">
+            <div class="password-wrapper">
+                <input type="password" id="adminPass" placeholder="Password">
+                <i class="fas fa-eye" id="toggleAdminPass"></i>
+            </div>
+            <button class="btn-main" id="loginBtn">LOGIN</button>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="header">
+            <div class="nav-icons">
+                <button class="icon-btn" id="openSettings"><i class="fas fa-cog" style="color:white;"></i></button>
+                <button class="icon-btn" id="toggleTheme"><i id="modeIcon" class="fas fa-sun" style="color:white;"></i></button>
+                <button class="icon-btn" id="logoutBtn"><i class="fas fa-power-off" style="color:white;"></i></button>
+            </div>
+            <h1 style="font-weight: 900; font-size: 28px; letter-spacing: 0.5px; color: white;">AGE <span style="color:var(--gold)">VIP</span> PANEL</h1>
+            <div class="dashboard">
+                <div class="stat-card"> <h2 id="totalCount">0</h2> <p style="font-size: 10px; font-weight: bold; opacity: 0.7; color: white;">TOTAL USERS</p> </div>
+                <div class="stat-card"> <h2 id="activeCount">0</h2> <p style="font-size: 10px; font-weight: bold; opacity: 0.7; color: white;">ACTIVE VIP</p> </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <i class="fas fa-search" style="position:absolute; left:20px; top:18px; color:var(--accent);"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search account ID or Name...">
+        </div>
+
+        <div class="container" id="listContainer"></div>
+        
+        <button class="fab" id="openAddModal"><i class="fas fa-plus"></i></button>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div class="modal-overlay" id="inputModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; font-weight: 900; color: var(--accent);">REGISTER LICENSE</h3>
+            <input type="text" id="mId" placeholder="Account ID / Token">
+            <input type="text" id="mName" placeholder="Customer Name">
+            
+            <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px; opacity: 0.7;">SELECT DURATION:</p>
+            <div class="quick-date-group">
+                <button class="q-date-btn" data-days="30">1 Month (30D)</button>
+                <button class="q-date-btn" data-days="60">2 Months (60D)</button>
+                <button class="q-date-btn" data-days="360">1 Year (360D)</button>
+            </div>
+            <input type="date" id="mDate">
+            
+            <button class="btn-main" id="saveDataBtn">ACTIVATE VIP</button>
+            <button class="btn-main" style="background:#4b5563; color: white; margin-top: 5px;" id="closeInputModal">CANCEL</button>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-content" style="border-color: #dc2626; text-align: center;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 40px; color: #dc2626; margin-bottom: 15px;"></i>
+            <h3 style="font-weight: 900; color: var(--text-main); margin-bottom: 10px;">Are you sure?</h3>
+            <p style="font-size: 14px; color: var(--text-dim);">Do you really want to delete this user <br><b id="deleteTargetName" style="color:var(--text-main)"></b>?</p>
+            <div class="delete-btn-group">
+                <button class="btn-confirm-del" id="executeDelete">YES, DELETE</button>
+                <button class="btn-cancel-del" id="closeDeleteModal">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VOUCHER MODAL -->
+    <div class="modal-overlay" id="voucherOverlay">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="vip-membership-card" id="voucherPrint">
+                <div class="card-inner">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                         <div style="font-weight: 900; color: var(--gold); font-size: 20px; letter-spacing: 0.5px;"><i class="fas fa-crown"></i> VIP</div>
+                         <div id="vDaysLeft" style="font-weight: 900; font-size: 14px;">30 DAYS</div>
+                    </div>
+                    <div id="vId" style="font-family: monospace; font-size: 22px; letter-spacing: 2.5px; font-weight: bold; color: #fff; margin-top: 15px;">0000 0000 0000</div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <p style="font-size: 8px; text-transform: uppercase; opacity: 0.6; letter-spacing: 1px; margin-bottom: 2px;">Card Holder</p>
+                            <p id="vName" style="font-weight: 900; font-size: 16px; text-transform: uppercase;">CUSTOMER NAME</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 8px; text-transform: uppercase; opacity: 0.6; letter-spacing: 1px; margin-bottom: 2px;">Expires On</p>
+                            <p id="vExp" style="font-family: monospace; font-weight: bold; font-size: 14px;">00/00/0000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-main" style="width:340px; margin-top:15px; background: var(--gold); color: #000000;" id="downloadVoucher">DOWNLOAD CARD</button>
+            <button id="closeVoucher" style="color:white; margin-top:15px; background:none; border:none; opacity:0.6; cursor:pointer;">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; font-weight: 900; color: var(--accent);">ADMIN SETTINGS</h3>
+            <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px; opacity: 0.7;">CHANGE USERNAME:</p>
+            <input type="text" id="newAdminUser" placeholder="New Username">
+            <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px; opacity: 0.7;">CHANGE PASSWORD:</p>
+            <div class="password-wrapper">
+                <input type="password" id="newAdminPass" placeholder="New Password">
+                <i class="fas fa-eye" id="toggleNewPass"></i>
+            </div>
+            <p style="font-size: 11px; font-weight: bold; margin-bottom: 5px; opacity: 0.7;">CONFIRM PASSWORD:</p>
+            <div class="password-wrapper">
+                <input type="password" id="confirmAdminPass" placeholder="Confirm Password">
+                <i class="fas fa-eye" id="toggleConfirmPass"></i>
+            </div>
+            <button class="btn-main" id="saveSettingsBtn">SAVE SETTINGS</button>
+            <button class="btn-main" style="background:#4b5563; color: white; margin-top: 5px;" id="closeSettingsModal">CANCEL</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-2AGMVUEjp-7OQP1u5cGbVQcQNkffNRk",
+            authDomain: "formmvpn.firebaseapp.com",
+            projectId: "formmvpn",
+            storageBucket: "formmvpn.firebasestorage.app",
+            messagingSenderId: "481295505632",
+            appId: "1:481295505632:web:e40f89d81fba11baf39885",
+            measurementId: "G-RXK2MNRN9L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let allUsers = [];
+        let userIdToDelete = null;
+        const DEFAULT_USER = "AGEVPN";
+        const DEFAULT_PASS = "1234567";
+        const ADMIN_DOC_ID = "---ADMIN_CREDENTIALS---";
+
+        // DOM Elements
+        const loginSection = document.getElementById('loginSection');
+        const mainContent = document.getElementById('mainContent');
+        const listContainer = document.getElementById('listContainer');
+        const totalCount = document.getElementById('totalCount');
+        const activeCount = document.getElementById('activeCount');
+
+        // Check Auth
+        function checkAuth() {
+            if (localStorage.getItem("ageLogin") === "true") {
+                loginSection.style.display = 'none';
+                mainContent.style.display = 'block';
+                startRealtimeUpdates();
+            } else {
+                loginSection.style.display = 'flex';
+                mainContent.style.display = 'none';
+            }
+        }
+
+        // Realtime Updates
+        function startRealtimeUpdates() {
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                allUsers = [];
+                snapshot.forEach((doc) => {
+                    if (doc.id !== ADMIN_DOC_ID) {
+                        allUsers.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+                updateStats();
+                renderUsers(allUsers);
+            });
+        }
+
+        function updateStats() {
+            totalCount.innerText = allUsers.length;
+            const active = allUsers.filter(u => u.isActive && new Date(u.expiryDate) >= new Date().setHours(0,0,0,0)).length;
+            activeCount.innerText = active;
+        }
+
+        function getProgressColor(days, isActive) {
+            if (!isActive) return '#4b5563'; 
+            if (days <= 0) return '#ef4444';   
+            if (days <= 7) return '#ef4444';   
+            if (days <= 14) return '#eab308';  
+            if (days <= 30) return '#84cc16';  
+            return '#10b981';                  
+        }
+
+        function renderUsers(users) {
+            listContainer.innerHTML = "";
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            users.forEach(u => {
+                const expDate = new Date(u.expiryDate);
+                expDate.setHours(0,0,0,0);
+                const diffTime = expDate.getTime() - today.getTime();
+                const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const cardColor = getProgressColor(daysLeft, u.isActive);
+                const progress = Math.max(0, Math.min(100, (daysLeft / 30) * 100));
+                const dashOffset = 188.4 - (188.4 * progress / 100);
+
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="status-badge" style="background: ${cardColor}20; color: ${cardColor}; border: 1px solid ${cardColor}40;">
+                        ${!u.isActive ? 'BLOCKED' : (daysLeft <= 0 ? 'EXPIRED' : 'ACTIVE')}
+                    </div>
+                    <div class="card-top">
+                        <div class="progress-circle">
+                            <svg><circle class="bg" cx="32" cy="32" r="30"></circle><circle style="stroke: ${cardColor}; stroke-dashoffset: ${dashOffset}; stroke-dasharray: 188.4;" cx="32" cy="32" r="30"></circle></svg>
+                            <div class="percentage" style="color: ${cardColor}">${daysLeft <= 0 ? '!' : daysLeft + 'd'}</div>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name-title">${u.username} <i class="fas fa-check-circle"></i></div>
+                            <div class="user-sub-title">PREMIUM MEMBER</div>
+                        </div>
+                    </div>
+                    <div class="user-data-wrapper">
+                        <div class="data-item"><div class="data-label">Account ID</div><div class="data-value id">${u.id}</div></div>
+                        <div class="data-item right-align"><div class="data-label">Expiration</div><div class="data-value">${u.expiryDate.split('-').reverse().join('/')}</div></div>
+                    </div>
+                    <div class="action-group">
+                        <button class="act-btn btn-edit" onclick="window.openEditModal('${u.id}', '${u.username}', '${u.expiryDate}')"><i class="fas fa-edit"></i></button>
+                        <button class="act-btn ${u.isActive ? 'btn-block' : 'btn-unblock'}" onclick="window.toggleUserStatus('${u.id}', ${u.isActive})"><i class="fas fa-${u.isActive ? 'ban' : 'check'}"></i></button>
+                        <button class="act-btn btn-card" onclick="window.showVoucher('${u.id}', '${u.username}', '${u.expiryDate}')"><i class="fas fa-id-card"></i></button>
+                        <button class="act-btn btn-delete" onclick="window.confirmDelete('${u.id}', '${u.username}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // Event Listeners & Functions
+        window.handleLogin = async () => {
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+            if(!user || !pass) return alert("Please enter both username and password!");
+            
+            const btn = document.getElementById('loginBtn');
+            btn.innerText = "CHECKING...";
+            btn.disabled = true;
+
+            try {
+                const docSnap = await getDoc(doc(db, "users", ADMIN_DOC_ID));
+                let savedUser = DEFAULT_USER, savedPass = DEFAULT_PASS;
+                if (docSnap.exists()) {
+                    savedUser = docSnap.data().u;
+                    savedPass = docSnap.data().p;
+                } else {
+                    await setDoc(doc(db, "users", ADMIN_DOC_ID), { u: DEFAULT_USER, p: DEFAULT_PASS, isAdmin: true });
+                }
+
+                if(user === savedUser && pass === savedPass) {
+                    localStorage.setItem("ageLogin", "true");
+                    checkAuth();
+                } else {
+                    alert("Incorrect Username or Password!");
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+            } finally {
+                btn.innerText = "LOGIN";
+                btn.disabled = false;
+            }
+        };
+
+        window.handleSaveData = async () => {
+            const id = document.getElementById('mId').value.trim();
+            const name = document.getElementById('mName').value.trim();
+            const date = document.getElementById('mDate').value;
+            if(!id || !name || !date) return alert("All fields are required!");
+
+            try {
+                await setDoc(doc(db, "users", id), { username: name, expiryDate: date, isActive: true });
+                alert("VIP Activated!");
+                document.getElementById('inputModal').style.display = 'none';
+            } catch (e) { alert(e.message); }
+        };
+
+        window.toggleUserStatus = async (id, current) => {
+            await updateDoc(doc(db, "users", id), { isActive: !current });
+        };
+
+        window.executeDelete = async () => {
+            if(userIdToDelete) {
+                await deleteDoc(doc(db, "users", userIdToDelete));
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+        };
+
+        window.handleSaveSettings = async () => {
+            const u = document.getElementById('newAdminUser').value.trim();
+            const p = document.getElementById('newAdminPass').value.trim();
+            const cp = document.getElementById('confirmAdminPass').value.trim();
+            if(!u || !p || !cp) return alert("Empty fields!");
+            if(p !== cp) return alert("No match!");
+
+            await setDoc(doc(db, "users", ADMIN_DOC_ID), { u, p, isAdmin: true });
+            alert("Settings Saved!");
+            document.getElementById('settingsModal').style.display = 'none';
+        };
+
+        // UI Handlers
+        document.getElementById('loginBtn').onclick = window.handleLogin;
+        document.getElementById('saveDataBtn').onclick = window.handleSaveData;
+        document.getElementById('executeDelete').onclick = window.executeDelete;
+        document.getElementById('saveSettingsBtn').onclick = window.handleSaveSettings;
+        document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem("ageLogin"); location.reload(); };
+        document.getElementById('openAddModal').onclick = () => {
+            document.getElementById('mId').value = "";
+            document.getElementById('mName').value = "";
+            document.getElementById('inputModal').style.display = 'flex';
+        };
+        document.getElementById('closeInputModal').onclick = () => document.getElementById('inputModal').style.display = 'none';
+        document.getElementById('closeDeleteModal').onclick = () => document.getElementById('deleteModal').style.display = 'none';
+        document.getElementById('closeVoucher').onclick = () => document.getElementById('voucherOverlay').style.display = 'none';
+        document.getElementById('closeSettingsModal').onclick = () => document.getElementById('settingsModal').style.display = 'none';
+        
+        window.confirmDelete = (id, name) => {
+            userIdToDelete = id;
+            document.getElementById('deleteTargetName').innerText = name;
+            document.getElementById('deleteModal').style.display = 'flex';
+        };
+
+        window.openEditModal = (id, name, date) => {
+            document.getElementById('mId').value = id;
+            document.getElementById('mName').value = name;
+            document.getElementById('mDate').value = date;
+            document.getElementById('inputModal').style.display = 'flex';
+        };
+
+        window.showVoucher = (id, name, exp) => {
+            document.getElementById('vId').innerText = id;
+            document.getElementById('vName').innerText = name;
+            document.getElementById('vExp').innerText = exp.split('-').reverse().join('/');
+            const days = Math.ceil((new Date(exp) - new Date().setHours(0,0,0,0)) / (1000*60*60*24));
+            document.getElementById('vDaysLeft').innerText = days <= 0 ? "EXPIRED" : days + " DAYS";
+            document.getElementById('voucherOverlay').style.display = 'flex';
+        };
+
+        window.downloadVoucher = () => {
+            html2canvas(document.getElementById('voucherPrint')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'VIP_CARD.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        };
+
+        // Theme Toggle
+        document.getElementById('toggleTheme').onclick = () => {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('modeIcon').className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon';
+        };
+
+        // Quick Date Buttons
+        document.querySelectorAll('.q-date-btn').forEach(btn => {
+            btn.onclick = () => {
+                const d = new Date();
+                d.setDate(d.getDate() + parseInt(btn.dataset.days));
+                document.getElementById('mDate').value = d.toISOString().split('T')[0];
+            };
+        });
+
+        // Password Toggles
+        const setupToggle = (btnId, inputId) => {
+            document.getElementById(btnId).onclick = function() {
+                const input = document.getElementById(inputId);
+                input.type = input.type === "password" ? "text" : "password";
+                this.className = input.type === "password" ? "fas fa-eye" : "fas fa-eye-slash";
+            };
+        };
+        setupToggle('toggleAdminPass', 'adminPass');
+        setupToggle('toggleNewPass', 'newAdminPass');
+        setupToggle('toggleConfirmPass', 'confirmAdminPass');
+
+        // Filter
+        document.getElementById('searchInput').onkeyup = function() {
+            const val = this.value.toLowerCase();
+            const filtered = allUsers.filter(u => u.id.toLowerCase().includes(val) || u.username.toLowerCase().includes(val));
+            renderUsers(filtered);
+        };
+
+        document.getElementById('openSettings').onclick = async () => {
+            const docSnap = await getDoc(doc(db, "users", ADMIN_DOC_ID));
+            if (docSnap.exists()) {
+                document.getElementById('newAdminUser').value = docSnap.data().u;
+                document.getElementById('newAdminPass').value = docSnap.data().p;
+            }
+            document.getElementById('settingsModal').style.display = 'flex';
+        };
+
+        checkAuth();
+    </script>
+</body>
+</html>
